@@ -83,16 +83,96 @@ button { cursor: pointer; }
 .hero p.sub { font-size: clamp(21px, 2.6vw, 28px); line-height: 1.25; color: var(--muted); margin: 14px auto 0; max-width: 30ch; letter-spacing: .004em; }
 .hero .ctas { display: flex; justify-content: center; align-items: center; gap: 24px; margin-top: 30px; flex-wrap: wrap; }
 
-.device { margin: 56px auto 0; width: min(360px, 88%); border-radius: 48px; padding: 12px; background: #1D1D1F; box-shadow: 0 40px 80px rgba(0,0,0,.18), inset 0 0 0 2px #3a3a3c; }
-.screen { border-radius: 38px; background: var(--bg-2); padding: 46px 16px 18px; overflow: hidden; position: relative; color: var(--text); }
-.screen::before { content: ""; position: absolute; top: 12px; left: 50%; width: 92px; height: 26px; margin-left: -46px; border-radius: 20px; background: #000; }
-.screen h3 { font: 700 30px/1.1 var(--display); margin: 4px 4px 14px; }
-.mini { background: var(--card); border-radius: 14px; overflow: hidden; }
-.mini .r { display: flex; align-items: center; gap: 12px; padding: 11px 12px; }
-.mini .r + .r { border-top: 1px solid var(--sep); margin-left: 56px; padding-left: 0; }
-.mini .r .t { flex: 1; min-width: 0; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.mini .r .t small { display: block; color: var(--muted); font-size: 12px; }
-.mini .r b { font-size: 20px; font-weight: 600; }
+/* hero title: words rise and un-blur one after another */
+.hero-title span { display: inline-block; }
+.anim .hero-title span { opacity: 0; filter: blur(12px); transform: translateY(24px); animation: word-in 1s var(--ease) forwards; }
+.anim .hero-title span:nth-child(2) { animation-delay: .12s; } .anim .hero-title span:nth-child(3) { animation-delay: .24s; }
+.anim .hero .sub, .anim .hero .ctas, .anim .hero .eyebrow { opacity: 0; animation: word-in 1s var(--ease) .45s forwards; }
+@keyframes word-in { to { opacity: 1; filter: none; transform: none; } }
+
+/* the phone: a whole iPhone, tilted back, straightening as you scroll */
+.phone-stage { margin: 56px auto 0; perspective: 1400px; --hp: 0; }
+.phone { width: min(300px, 78vw); aspect-ratio: 9 / 19.5; margin: 0 auto; border-radius: 52px; padding: 11px; background: linear-gradient(145deg, #2c2c2e, #0b0b0c); box-shadow: 0 50px 100px rgba(0,0,0,.22), inset 0 0 0 1.5px #48484a, inset 0 0 0 4px #1c1c1e;
+  transform: rotateX(calc((1 - var(--hp)) * 22deg)) scale(calc(.9 + var(--hp) * .1)) translateY(calc((1 - var(--hp)) * 30px)); transform-origin: 50% 0; transition: transform .1s linear; }
+.phone .screen { height: 100%; border-radius: 42px; background: var(--bg-2); overflow: hidden; display: flex; flex-direction: column; color: var(--text); text-align: left; }
+.statusbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 24px 6px; font-size: 13px; font-weight: 600; }
+.statusbar .island { width: 84px; height: 24px; border-radius: 14px; background: #000; }
+.sb-icons { display: flex; gap: 3px; align-items: end; }
+.sb-icons i { width: 4px; background: var(--text); border-radius: 1px; }
+.sb-icons i:nth-child(1) { height: 5px; } .sb-icons i:nth-child(2) { height: 8px; } .sb-icons i:nth-child(3) { height: 11px; }
+.ph-body { flex: 1; padding: 6px 14px 0; display: grid; gap: 12px; align-content: start; overflow: hidden; }
+.ph-title { font: 700 26px/1.1 var(--display); padding-left: 4px; }
+.ph-sum { background: var(--card); border-radius: 16px; padding: 12px; display: flex; align-items: center; gap: 12px; }
+.ph-sum div { display: grid; min-width: 0; }
+.ph-sum .k { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ph-sum b { font: 700 28px/1.1 var(--display); }
+.ph-list { background: var(--card); border-radius: 16px; overflow: hidden; }
+.ph-list .r { display: flex; align-items: center; gap: 10px; padding: 8px 12px; }
+.ph-list .r + .r { border-top: 1px solid var(--sep); }
+.ph-list .t { flex: 1; min-width: 0; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ph-list .t small { display: block; color: var(--muted); font-size: 11px; }
+.ph-list b { font-size: 17px; font-weight: 600; }
+.tabbar { display: flex; justify-content: space-around; padding: 10px 8px 22px; border-top: 1px solid var(--sep); background: color-mix(in srgb, var(--card) 85%, transparent); font-size: 11px; color: var(--faint); }
+.tabbar .on { color: var(--blue); font-weight: 600; }
+
+/* scroll story: pinned while three stages play out */
+.story { height: 260vh; margin-top: 60px; position: relative; }
+.story-pin { position: sticky; top: 48px; height: calc(100vh - 48px); display: grid; align-items: center; overflow: hidden; }
+.story-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 48px; align-items: center; }
+.story-copy { display: grid; gap: 26px; }
+.story-step { margin: 0; font-size: clamp(21px, 2.6vw, 28px); line-height: 1.25; color: var(--faint); opacity: .35; transition: opacity .5s var(--ease), color .5s var(--ease); }
+.story-step b { color: inherit; font-weight: 600; }
+.story-step.on { opacity: 1; color: var(--text); }
+.story-visual { position: relative; min-height: 340px; }
+.sheet-shot, .answers { position: absolute; inset: 0; border-radius: 22px; padding: 18px; transition: opacity .6s var(--ease), transform .8s var(--ease); }
+.sheet-shot { background: #fff; color: #1d1d1f; box-shadow: var(--shadow), 0 0 0 1px var(--sep); overflow: hidden; font-size: 14px; }
+.ss-head, .ss-row { display: grid; grid-template-columns: minmax(0, 1fr) 64px 56px; gap: 8px; padding: 10px 8px; }
+.ss-head { background: #0b2a5b; color: #fff; border-radius: 8px; font-weight: 600; font-size: 12px; }
+.ss-row { border-bottom: 1px solid #e5e5ea; }
+.ss-row span:not(:first-child), .ss-head span:not(:first-child) { text-align: center; font-variant-numeric: tabular-nums; }
+.scanline { position: absolute; left: 0; right: 0; height: 70px; top: calc(var(--scan, 0) * 100% - 35px); background: linear-gradient(180deg, transparent, rgba(0,113,227,.25) 50%, transparent); opacity: 0; transition: opacity .3s; }
+.story.s1 .scanline { opacity: 1; }
+.answers { background: var(--card); box-shadow: var(--shadow); display: grid; align-content: start; gap: 2px; opacity: 0; transform: translateY(30px) scale(.97); }
+.ans { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 8px; border-bottom: 1px solid var(--sep); opacity: 0; transform: translateX(-16px); transition: opacity .5s var(--ease), transform .6s var(--ease); }
+.ans b { font: 700 28px var(--display); }
+.story.s2 .sheet-shot { opacity: 0; transform: translateY(-24px) scale(.96); }
+.story.s2 .answers { opacity: 1; transform: none; }
+.story.s2 .ans { opacity: 1; transform: none; }
+.story.s2 .ans:nth-child(2) { transition-delay: .06s; } .story.s2 .ans:nth-child(3) { transition-delay: .12s; } .story.s2 .ans:nth-child(4) { transition-delay: .18s; } .story.s2 .ans:nth-child(5) { transition-delay: .24s; }
+@media (max-width: 760px) {
+  .story { height: 240vh; }
+  .story-grid { grid-template-columns: 1fr; gap: 24px; }
+  .story-copy { gap: 10px; } .story-step { font-size: 18px; }
+  .story-visual { min-height: 300px; }
+  .ss-head, .ss-row { grid-template-columns: minmax(0, 1fr) 48px 44px; font-size: 13px; }
+}
+
+/* tiles lean toward the pointer */
+.tilt { transition: transform .5s var(--ease), box-shadow .5s var(--ease), opacity .9s var(--ease); }
+.tilt:hover { box-shadow: 0 20px 50px rgba(0,0,0,.08); }
+.hero-tile { background: linear-gradient(160deg, color-mix(in srgb, var(--red) 10%, var(--bg-2)), var(--bg-2) 60%); }
+.hero-tile .huge { font: 700 clamp(40px, 6vw, 64px)/1.02 var(--display); letter-spacing: -0.02em; }
+.hero-tile .huge .count { color: var(--red); font-variant-numeric: tabular-nums; }
+
+/* try it */
+.tryit { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; align-items: center; background: var(--bg-2); border-radius: 28px; padding: 36px; }
+.try-controls { display: grid; gap: 14px; }
+.try-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; background: var(--card); border-radius: 14px; padding: 12px 14px; font-size: 17px; flex-wrap: wrap; }
+.try-out { display: grid; justify-items: center; gap: 14px; text-align: center; }
+.try-answer { margin: 0; font: 600 clamp(22px, 3vw, 28px)/1.2 var(--display); max-width: 18ch; }
+.try-answer span { display: block; font: 400 15px var(--font); color: var(--muted); margin-top: 6px; }
+@media (max-width: 760px) { .tryit { grid-template-columns: 1fr; padding: 22px; } }
+
+/* app: semester card, review flags */
+.sem { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; font-size: 15px; }
+.sem label { display: flex; align-items: center; gap: 8px; color: var(--muted); }
+.sem input { border: 1px solid var(--sep); background: var(--bg-2); border-radius: 10px; padding: 7px 10px; font-size: 15px; color: var(--text); }
+.sem .hint-line { flex-basis: 100%; margin: 0; color: var(--muted); font-size: 14px; }
+.sheet tr.flag td { background: color-mix(in srgb, var(--orange) 10%, transparent); }
+.sheet tr.need td { background: color-mix(in srgb, var(--red) 9%, transparent); }
+.sheet .why { display: block; font-size: 12px; color: var(--orange); margin-top: 2px; }
+.sheet tr.need .why { color: var(--red); }
+.est { font-size: 13px; color: var(--muted); }
 
 section.band { padding-block: 96px 0; }
 .band h2 { font: 700 clamp(36px, 6vw, 56px)/1.07 var(--display); letter-spacing: -0.005em; margin: 0 0 14px; text-align: center; text-wrap: balance; }
@@ -102,7 +182,6 @@ section.band { padding-block: 96px 0; }
 .tile .k { font-size: 14px; font-weight: 600; color: var(--muted); }
 .tile h3 { font: 600 28px/1.14 var(--display); margin: 0; letter-spacing: .004em; }
 .tile p { margin: 0; color: var(--muted); }
-.tile .big { font: 700 64px/1 var(--display); letter-spacing: -0.02em; margin-top: auto; }
 .tile.wide { grid-column: span 2; }
 @media (max-width: 760px) { .bento { grid-template-columns: 1fr; } .tile.wide { grid-column: auto; } }
 
@@ -290,30 +369,91 @@ dialog::backdrop { background: rgba(0,0,0,.35); backdrop-filter: blur(4px); }
   <section class="view" data-view="home" hidden>
     <div class="hero wrap">
       <p class="eyebrow">Free for students</p>
-      <h1>Know your bunks.</h1>
+      <h1 class="hero-title"><span>Know</span> <span>your</span> <span>bunks.</span></h1>
       <p class="sub">One screenshot. Every subject. Exactly how many lectures you can skip.</p>
-      <div class="ctas"><a class="pill" href="#app">Get started</a><a class="more" href="#how">Learn more</a></div>
-      <div class="device rise" aria-label="Example of the app">
-        <div class="screen">
-          <h3>Attendance</h3>
-          <div class="mini">
-            <div class="r"><svg class="ring" width="40" height="40" viewBox="0 0 40 40"><circle class="track" cx="20" cy="20" r="16" stroke-width="5"/><circle class="val" cx="20" cy="20" r="16" stroke-width="5" stroke="var(--green)" stroke-dasharray="100.5" stroke-dashoffset="2.7" transform="rotate(-90 20 20)"/></svg><span class="t">Computer Programming<small>73 of 75 · 97.33%</small></span><b class="ok">16</b></div>
-            <div class="r"><svg class="ring" width="40" height="40" viewBox="0 0 40 40"><circle class="track" cx="20" cy="20" r="16" stroke-width="5"/><circle class="val" cx="20" cy="20" r="16" stroke-width="5" stroke="var(--green)" stroke-dasharray="100.5" stroke-dashoffset="6.7" transform="rotate(-90 20 20)"/></svg><span class="t">Financial Management<small>56 of 60 · 93.33%</small></span><b class="ok">10</b></div>
-            <div class="r"><svg class="ring" width="40" height="40" viewBox="0 0 40 40"><circle class="track" cx="20" cy="20" r="16" stroke-width="5"/><circle class="val" cx="20" cy="20" r="16" stroke-width="5" stroke="var(--orange)" stroke-dasharray="100.5" stroke-dashoffset="13" transform="rotate(-90 20 20)"/></svg><span class="t">Forensic Accounting<small>27 of 31 · 87.10%</small></span><b style="color:var(--orange)">2</b></div>
+      <div class="ctas"><a class="pill" href="#app">Get started</a><a class="more" href="#about">Learn more</a></div>
+
+      <div class="phone-stage" id="phone-stage">
+        <div class="phone" aria-label="What the app looks like on a phone">
+          <div class="screen">
+            <div class="statusbar"><span>9:41</span><span class="island"></span><span class="sb-icons" aria-hidden="true"><i></i><i></i><i></i></span></div>
+            <div class="ph-body">
+              <div class="ph-title">Attendance</div>
+              <div class="ph-sum">
+                <svg class="ring" width="84" height="84" viewBox="0 0 84 84" aria-hidden="true"><circle class="track" cx="42" cy="42" r="35" stroke-width="10"/><circle class="val demo-ring" cx="42" cy="42" r="35" stroke-width="10" stroke="var(--green)" stroke-dasharray="219.9" stroke-dashoffset="219.9" data-pct="93.02" transform="rotate(-90 42 42)"/><text x="42" y="42" style="font-size:17px">93%</text></svg>
+                <div><span class="k">Safe skips</span><b class="count" data-to="46">0</b><span class="k">Closest: Forensic Accounting</span></div>
+              </div>
+              <div class="ph-list">
+                <div class="r"><svg class="ring" width="34" height="34" viewBox="0 0 34 34"><circle class="track" cx="17" cy="17" r="13" stroke-width="4.5"/><circle class="val demo-ring" cx="17" cy="17" r="13" stroke-width="4.5" stroke="var(--green)" stroke-dasharray="81.7" stroke-dashoffset="81.7" data-pct="97.33" transform="rotate(-90 17 17)"/></svg><span class="t">Computer Programming<small>73 of 75</small></span><b class="ok">16</b></div>
+                <div class="r"><svg class="ring" width="34" height="34" viewBox="0 0 34 34"><circle class="track" cx="17" cy="17" r="13" stroke-width="4.5"/><circle class="val demo-ring" cx="17" cy="17" r="13" stroke-width="4.5" stroke="var(--green)" stroke-dasharray="81.7" stroke-dashoffset="81.7" data-pct="93.33" transform="rotate(-90 17 17)"/></svg><span class="t">Financial Management<small>56 of 60</small></span><b class="ok">10</b></div>
+                <div class="r"><svg class="ring" width="34" height="34" viewBox="0 0 34 34"><circle class="track" cx="17" cy="17" r="13" stroke-width="4.5"/><circle class="val demo-ring" cx="17" cy="17" r="13" stroke-width="4.5" stroke="var(--green)" stroke-dasharray="81.7" stroke-dashoffset="81.7" data-pct="91.67" transform="rotate(-90 17 17)"/></svg><span class="t">AI &amp; Machine Learning<small>55 of 60</small></span><b class="ok">8</b></div>
+                <div class="r"><svg class="ring" width="34" height="34" viewBox="0 0 34 34"><circle class="track" cx="17" cy="17" r="13" stroke-width="4.5"/><circle class="val demo-ring" cx="17" cy="17" r="13" stroke-width="4.5" stroke="var(--green)" stroke-dasharray="81.7" stroke-dashoffset="81.7" data-pct="95.56" transform="rotate(-90 17 17)"/></svg><span class="t">Direct Tax<small>43 of 45</small></span><b class="ok">8</b></div>
+                <div class="r"><svg class="ring" width="34" height="34" viewBox="0 0 34 34"><circle class="track" cx="17" cy="17" r="13" stroke-width="4.5"/><circle class="val demo-ring" cx="17" cy="17" r="13" stroke-width="4.5" stroke="var(--orange)" stroke-dasharray="81.7" stroke-dashoffset="81.7" data-pct="87.1" transform="rotate(-90 17 17)"/></svg><span class="t">Forensic Accounting<small>27 of 31</small></span><b style="color:var(--orange)">2</b></div>
+              </div>
+            </div>
+            <div class="tabbar" aria-hidden="true"><span class="on">Subjects</span><span>Scan</span><span>Rules</span></div>
           </div>
         </div>
       </div>
     </div>
 
+    <!-- scroll story: the screenshot turns into answers as you scroll -->
+    <section class="story" id="story" aria-label="How a screenshot becomes skip counts">
+      <div class="story-pin">
+        <div class="wrap story-grid">
+          <div class="story-copy">
+            <p class="story-step" data-stage="0"><b>Drop in your screenshot.</b> The Self Attendance Report, straight from the portal.</p>
+            <p class="story-step" data-stage="1"><b>It reads every row.</b> On your device, in a few seconds. Nothing is uploaded.</p>
+            <p class="story-step" data-stage="2"><b>You get answers.</b> How many lectures each subject can spare, at a glance.</p>
+          </div>
+          <div class="story-visual" aria-hidden="true">
+            <div class="sheet-shot">
+              <div class="ss-head"><span>Subject</span><span>Present</span><span>Total</span></div>
+              <div class="ss-row"><span>Computer Programming</span><span>73</span><span>75</span></div>
+              <div class="ss-row"><span>Financial Management</span><span>56</span><span>60</span></div>
+              <div class="ss-row"><span>AI &amp; Machine Learning</span><span>55</span><span>60</span></div>
+              <div class="ss-row"><span>Direct Tax</span><span>43</span><span>45</span></div>
+              <div class="ss-row"><span>Forensic Accounting</span><span>27</span><span>31</span></div>
+              <i class="scanline"></i>
+            </div>
+            <div class="answers">
+              <div class="ans"><span>Computer Programming</span><b class="ok">16</b></div>
+              <div class="ans"><span>Financial Management</span><b class="ok">10</b></div>
+              <div class="ans"><span>AI &amp; Machine Learning</span><b class="ok">8</b></div>
+              <div class="ans"><span>Direct Tax</span><b class="ok">8</b></div>
+              <div class="ans"><span>Forensic Accounting</span><b style="color:var(--orange)">2</b></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="band wrap" id="how">
       <h2 class="rise">Ten seconds. Three steps.</h2>
       <p class="lead rise">No spreadsheet, no calculator, no guessing near exams.</p>
       <div class="bento">
-        <div class="tile rise"><span class="k">Step 1</span><h3>Snap your report.</h3><p>Screenshot the Self Attendance Report on your portal and drop it in.</p></div>
-        <div class="tile rise"><span class="k">Step 2</span><h3>Check the numbers.</h3><p>It reads every subject on your device. Fix anything misread in a tap.</p></div>
-        <div class="tile rise"><span class="k">Step 3</span><h3>Skip with confidence.</h3><p>Each subject shows how many lectures you can miss and stay above the line.</p></div>
-        <div class="tile wide rise"><span class="k">Exact, every time</span><h3>Plain arithmetic. Never a guess.</h3><p>Every percentage and skip count is worked out by tested code, not AI. Below the cutoff? It tells you how many lectures to attend in a row to get back.</p><span class="big num">80%</span></div>
-        <div class="tile rise"><span class="k">Private</span><h3>Stays on your phone.</h3><p>Your screenshot is read on the device and never uploaded.</p></div>
+        <div class="tile tilt rise"><span class="k">Step 1</span><h3>Snap your report.</h3><p>Screenshot the Self Attendance Report on your portal and drop it in.</p></div>
+        <div class="tile tilt rise"><span class="k">Step 2</span><h3>Check the numbers.</h3><p>It reads every subject on your device. Fix anything misread in a tap.</p></div>
+        <div class="tile tilt rise"><span class="k">Step 3</span><h3>Skip with confidence.</h3><p>Each subject shows how many lectures you can miss and stay above the line.</p></div>
+        <div class="tile wide tilt rise hero-tile"><span class="k">Below the line?</span><h3 class="huge">Attend <span class="count" data-to="6">0</span> in a row.</h3><p>Already under the cutoff in a subject? It tells you exactly how many lectures to attend back to back to get safe again.</p></div>
+        <div class="tile tilt rise"><span class="k">Private</span><h3>Stays on your phone.</h3><p>Your screenshot is read on the device and never uploaded.</p></div>
+      </div>
+    </section>
+
+    <!-- try it: the real calculation, live -->
+    <section class="band wrap">
+      <h2 class="rise">Try it.</h2>
+      <p class="lead rise">Change the numbers. The answer updates as you tap.</p>
+      <div class="tryit rise">
+        <div class="try-controls">
+          <div class="try-row"><span>Lectures attended</span><span class="stepper"><button type="button" data-try="a" data-d="-1" aria-label="Fewer attended">−</button><span id="try-a">27</span><button type="button" data-try="a" data-d="1" aria-label="More attended">+</button></span></div>
+          <div class="try-row"><span>Lectures held</span><span class="stepper"><button type="button" data-try="t" data-d="-1" aria-label="Fewer held">−</button><span id="try-t">31</span><button type="button" data-try="t" data-d="1" aria-label="More held">+</button></span></div>
+          <div class="try-row"><span>Cutoff</span><span class="miniseg"><button type="button" data-try-cut="75" aria-pressed="false">75%</button><button type="button" data-try-cut="80" aria-pressed="true">80%</button><button type="button" data-try-cut="85" aria-pressed="false">85%</button></span></div>
+        </div>
+        <div class="try-out">
+          <svg class="ring" width="150" height="150" viewBox="0 0 150 150" aria-hidden="true"><circle class="track" cx="75" cy="75" r="62" stroke-width="16"/><circle class="val" id="try-ring" cx="75" cy="75" r="62" stroke-width="16" stroke="var(--green)" stroke-dasharray="389.6" stroke-dashoffset="389.6" transform="rotate(-90 75 75)"/><text x="75" y="75" id="try-pct" style="font-size:26px">—</text></svg>
+          <p class="try-answer" id="try-answer" aria-live="polite"></p>
+        </div>
       </div>
     </section>
 
@@ -321,9 +461,9 @@ dialog::backdrop { background: rgba(0,0,0,.35); backdrop-filter: blur(4px); }
       <h2 class="rise">Questions.</h2>
       <div class="faq">
         <details class="rise"><summary>Is my screenshot uploaded?</summary><p>No. It's read by your own browser on your own device. Your numbers stay in that browser.</p></details>
+        <details class="rise"><summary>How does it know how many lectures are left?</summary><p>Tell it when your semester ends. It uses each subject's pace so far, or its credits if you add them, plus any extra lectures you know about.</p></details>
         <details class="rise"><summary>Why do I need an account?</summary><p>So your numbers belong to you, and so syncing between your phone and laptop can come next. We only use your email to sign you in.</p></details>
         <details class="rise"><summary>Is this official?</summary><p>No. It's an independent tool made by a student. The portal is always the final word.</p></details>
-        <details class="rise"><summary>My college uses 75%.</summary><p>Change the cutoff in the app. It can apply to each subject or to your overall total.</p></details>
       </div>
     </section>
 
@@ -336,25 +476,26 @@ dialog::backdrop { background: rgba(0,0,0,.35); backdrop-filter: blur(4px); }
   <!-- ABOUT -->
   <section class="view" data-view="about" hidden>
     <article class="doc wrap">
-      <h1>About Bunk Budget</h1>
-      <p class="intro">A small, free tool that answers the question students ask every week: can I skip this lecture?</p>
-      <h2>What it is</h2>
-      <p>Bunk Budget reads your attendance report and shows, for each subject, how many lectures you can miss and still stay above your college's cutoff. If you're already below, it shows how many to attend in a row to get back.</p>
-      <h2>Who makes it</h2>
-      <p>A student building the tools they wished they had. It's independent and not affiliated with any university.</p>
-      <h2>Your data</h2>
-      <ul>
+      <h1 class="rise">About Bunk Budget</h1>
+      <p class="intro rise">A small, free tool that answers the question students ask every week: can I skip this lecture?</p>
+      <h2 class="rise">What it does</h2>
+      <p class="rise">Bunk Budget reads your attendance report and shows, for each subject, how many lectures you can miss and still stay above your college's cutoff. If you're already below, it shows how many to attend in a row to get back.</p>
+      <h2 class="rise">How it knows</h2>
+      <p class="rise">It starts from the same sum you'd do by hand: lectures attended ÷ lectures held × 100. Then it does the part that's tedious by hand, working out the skips for every subject at once and keeping track as the semester goes on.</p>
+      <h2 class="rise">Who makes it</h2>
+      <p class="rise">A student building the tools they wished they had. It's independent and not affiliated with any university.</p>
+      <h2 class="rise">Your data</h2>
+      <ul class="rise">
         <li>Your screenshot is read by your own browser and never uploaded.</li>
         <li>Your attendance numbers are saved only in that browser, on that device.</li>
         <li>Your account holds only your email and password. No ads, no tracking.</li>
       </ul>
-      <h2>The math</h2>
-      <p>With <i>a</i> lectures attended, <i>t</i> held and a cutoff of <i>p</i>%:</p>
-      <div class="eq">Can skip now = floor((100a − pt) / p)</div>
-      <div class="eq">Attend in a row to recover = ceil((pt − 100a) / (100 − p))</div>
-      <div class="eq">Misses left this term, r lectures to go = floor((100a − pt + (100 − p)r) / 100)</div>
-      <p style="color:var(--muted)">Each formula is checked against a lecture-by-lecture simulation.</p>
     </article>
+    <section class="final wrap">
+      <h2 class="rise">Ready when you are.</h2>
+      <p class="lead rise" style="margin-bottom:28px">Free, and it takes ten seconds.</p>
+      <div class="ctas rise"><a class="pill" href="#app">Get started</a><a class="more" href="#home">Back to overview</a></div>
+    </section>
   </section>
 
   <!-- SIGN IN -->
@@ -425,6 +566,12 @@ dialog::backdrop { background: rgba(0,0,0,.35); backdrop-filter: blur(4px); }
         <div><span class="k">Cutoff</span><span class="stepper"><button type="button" data-step="cutoff" data-d="-1" aria-label="Lower cutoff">−</button><span id="cutoff-v">80%</span><button type="button" data-step="cutoff" data-d="1" aria-label="Raise cutoff">+</button></span></div>
         <div><span class="k">Keep spare</span><span class="stepper"><button type="button" data-step="reserve" data-d="-1" aria-label="Fewer spare">−</button><span id="reserve-v">0</span><button type="button" data-step="reserve" data-d="1" aria-label="More spare">+</button></span></div>
         <div><span class="k">Applies to</span><span class="miniseg"><button type="button" data-rule="subject" aria-pressed="true">Each subject</button><button type="button" data-rule="overall" aria-pressed="false">Overall</button></span></div>
+      </div>
+
+      <div class="card sem" aria-label="Semester dates">
+        <label>Semester started <input type="date" id="sem-start"></label>
+        <label>Exams start <input type="date" id="sem-end"></label>
+        <p class="hint-line" id="sem-hint">Add both dates and every subject shows how many lectures are probably still to come, and how many of those you can miss.</p>
       </div>
 
       <div>
@@ -533,6 +680,34 @@ window.BUNK_CONFIG = { supabaseUrl: 'https://erzxgafxqamtxieicbvu.supabase.co', 
     return out;
   }
 
+  // Whole weeks (with fraction) between two dates given as 'YYYY-MM-DD' or Date objects.
+  function weeksBetween(from, to) {
+    var a = new Date(from), b = new Date(to);
+    if (isNaN(a) || isNaN(b)) return null;
+    return Math.max(0, (Date.UTC(b.getFullYear(), b.getMonth(), b.getDate()) - Date.UTC(a.getFullYear(), a.getMonth(), a.getDate())) / (7 * 864e5));
+  }
+
+  // How many more lectures this subject will most likely hold before the semester ends.
+  //  - credits known: credits x lectures-per-credit each week (practicals count double), for the weeks left
+  //  - otherwise: the subject's own pace so far (held / weeks elapsed), which already includes the
+  //    extra lectures that teacher tends to take
+  //  - plus any extra lectures the student already knows are announced
+  // Returns { remaining, basis } or null when there isn't enough to go on.
+  function estimateRemaining(o) {
+    var extra = Math.max(0, Math.floor(o.extra || 0));
+    var left = o.weeksLeft, done = o.weeksElapsed;
+    if (left == null || !(left >= 0)) return null;
+    if (o.credits > 0) {
+      var perWeek = o.credits * (o.perCredit || 1) * (o.type === 'PR' ? 2 : 1);
+      return { remaining: Math.round(perWeek * left) + extra, basis: 'credits', perWeek: perWeek };
+    }
+    if (done >= 1 && o.held >= 0) {
+      var pace = o.held / done;
+      return { remaining: Math.round(pace * left) + extra, basis: 'pace', perWeek: pace };
+    }
+    return null;
+  }
+
   function totals(subjects) {
     var a = 0, t = 0;
     subjects.forEach(function (s) { a += s.attended; t += s.held; });
@@ -546,6 +721,8 @@ window.BUNK_CONFIG = { supabaseUrl: 'https://erzxgafxqamtxieicbvu.supabase.co', 
     termBudget: termBudget,
     percentAfterSkipping: percentAfterSkipping,
     analyseSubject: analyseSubject,
+    weeksBetween: weeksBetween,
+    estimateRemaining: estimateRemaining,
     totals: totals
   };
 
@@ -558,26 +735,52 @@ window.BUNK_CONFIG = { supabaseUrl: 'https://erzxgafxqamtxieicbvu.supabase.co', 
 /* ===== portal table reader ===== */
 /*
  * Turns text from the attendance portal (OCR output or copied table) into
- * { name, attended, held } rows. Pure string handling, no AI.
+ * { name, attended, held, type, fixed, incomplete } rows. Pure string handling, no AI.
  * Tuned on the MITWPU "Self Attendance Report" table:
  *   SrNo | Subject | Subject Type | Present | Total Period | Percentage
+ *
+ * OCR misreads digits ("55" -> "59)", "60" -> "80"). The portal's own percentage
+ * column lets plain arithmetic catch and repair that: attended / held must equal it.
+ * A row that still can't be read is returned with empty numbers, never dropped.
  */
 (function (root) {
   'use strict';
 
-  var SKIP = /^(sr\.?\s*no|subject|theory|practical|tutorial|total|self attendance)/i;
-  var TYPE = '(?:TH|PR|TU|TUT|LAB|PRACT|PRA)';
-  var WITH_TYPE = new RegExp('^(.*?[A-Za-z].*?)\\s+' + TYPE + '\\.?\\s+(\\d{1,3})\\s+(\\d{1,3})\\b', 'i');
-  var WITH_PCT = /^(.*?[A-Za-z].*?)\s+(\d{1,3})\s+(\d{1,3})\s+\d{1,3}(?:[.,]\d+)?\s*%?$/;
-  var SLASH = /^(.*?[A-Za-z].*?)\s+(\d{1,3})\s*\/\s*(\d{1,3})\b/;
+  var SKIP = /^(sr\.?\s*no|subject\b|theory|practical|tutorial|total|self attendance)/i;
+  var TYPED = /^(.*?[A-Za-z].*?)\s+(TH|PR|TU|TUT|LAB|PRACT|PRA)\.?(?:\s+(.*))?$/i;
+  var TRAILING_NUMBERS = /^(.*?[A-Za-z][^0-9]*?)\s+((?:\d{1,3}(?:[.,]\d+)?\s*[\/%]?\s*){2,3})$/;
 
   function cleanLine(raw) {
     return raw
-      .replace(/(\s-\s*)[|l1](?=\s|$)/g, '$1I')   // OCR reads the roman numeral "I" as | or l
+      .replace(/(\s-\s*)[|l1](?=\s|$)/g, '$1I')     // OCR reads the roman numeral "I" as | or l
+      .replace(/(\d)[)\]}|!'"]+(?=\s|$)/g, '$1')     // stray marks glued to a number: "59)" -> "59"
       .replace(/[|\[\]{}]/g, ' ')
       .replace(/[–—]/g, '-')
       .replace(/\s+/g, ' ')
       .trim();
+  }
+
+  function numbersIn(s) {
+    return (String(s || '').match(/\d{1,3}(?:[.,]\d+)?/g) || []).map(function (n) { return parseFloat(n.replace(',', '.')); });
+  }
+
+  function close(a, held, pct) { return held > 0 && Math.abs((a * 100) / held - pct) <= 0.06; }
+
+  // Check attended / held against the portal's percentage, repairing one misread number if needed.
+  function reconcile(a, t, pct) {
+    var out = { attended: a, held: t, fixed: null };
+    if (pct == null || !isFinite(pct)) return out;
+    if (Number.isInteger(a) && Number.isInteger(t) && t > 0 && a <= t && close(a, t, pct)) return out;
+    if (Number.isInteger(t) && t > 0) {                       // trust held, rebuild attended
+      var a2 = Math.round((pct * t) / 100);
+      if (a2 <= t && close(a2, t, pct)) { out.attended = a2; out.fixed = 'attended'; return out; }
+    }
+    if (Number.isInteger(a) && pct > 0) {                     // trust attended, rebuild held
+      var t2 = Math.round((a * 100) / pct);
+      if (t2 >= a && close(a, t2, pct)) { out.held = t2; out.fixed = 'held'; return out; }
+    }
+    out.fixed = 'unsure';
+    return out;
   }
 
   function parseRows(text) {
@@ -587,17 +790,42 @@ window.BUNK_CONFIG = { supabaseUrl: 'https://erzxgafxqamtxieicbvu.supabase.co', 
       if (!line) return;
       var body = line.replace(/^\d{1,2}[.)]?\s+/, '');
       if (SKIP.test(body)) return;
-      var m = body.match(WITH_TYPE) || body.match(WITH_PCT) || body.match(SLASH);
-      if (!m) return;
-      var name = m[1].replace(/\s*[-:]\s*$/, '').trim();
-      var attended = parseInt(m[2], 10), held = parseInt(m[3], 10);
-      if (name.length < 2 || held === 0 || attended > held) return;
-      rows.push({ name: name, attended: attended, held: held });
+
+      var name, type = null, nums;
+      var m = body.match(TYPED);
+      if (m) { name = m[1]; type = m[2].toUpperCase().slice(0, 2); nums = numbersIn(m[3]); }
+      else {
+        var slash = body.match(/^(.*?[A-Za-z].*?)\s+(\d{1,3})\s*\/\s*(\d{1,3})\b/);
+        if (slash) { name = slash[1]; nums = [+slash[2], +slash[3]]; }
+        else {
+          var tail = body.match(TRAILING_NUMBERS);
+          if (!tail) return;
+          name = tail[1]; nums = numbersIn(tail[2]);
+        }
+      }
+      name = name.replace(/\s*[-:]\s*$/, '').trim();
+      if (name.length < 2) return;
+
+      var ints = nums.filter(function (n) { return Number.isInteger(n); });
+      var pct = nums.length >= 3 ? nums[2] : nums.filter(function (n) { return !Number.isInteger(n); })[0];
+      var a = ints.length > 0 ? ints[0] : null, t = ints.length > 1 ? ints[1] : null;
+
+      if (a == null || t == null) {
+        if (type) rows.push({ name: name, attended: null, held: null, type: type, fixed: null, incomplete: true });
+        return;
+      }
+      if (t === 0 && a === 0) return;                          // subject with nothing held yet
+      var r = reconcile(a, t, pct);
+      if (r.held === 0 || r.attended > r.held) {
+        if (type) rows.push({ name: name, attended: a, held: t, type: type, fixed: 'unsure', incomplete: true });
+        return;
+      }
+      rows.push({ name: name, attended: r.attended, held: r.held, type: type, fixed: r.fixed, incomplete: false });
     });
     return rows;
   }
 
-  var BunkParser = { parseRows: parseRows };
+  var BunkParser = { parseRows: parseRows, reconcile: reconcile };
   if (typeof module !== 'undefined' && module.exports) module.exports = BunkParser;
   else root.BunkParser = BunkParser;
 })(this);
@@ -908,11 +1136,35 @@ window.BUNK_CONFIG = { supabaseUrl: 'https://erzxgafxqamtxieicbvu.supabase.co', 
   }
   var COLOR = { safe: 'var(--green)', tight: 'var(--orange)', below: 'var(--red)' };
 
+  // Lectures still to come for a subject: the student's own number if they typed one,
+  // otherwise the engine's estimate from the semester dates (pace so far, or credits).
+  function today() { var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+  function remainingFor(s) {
+    if (s.remaining != null) return { n: s.remaining, basis: 'typed' };
+    var sem = state.semester || {};
+    if (!sem.start || !sem.end) return null;
+    var est = E.estimateRemaining({
+      held: s.held, credits: s.credits, type: s.type, extra: s.extra,
+      weeksElapsed: E.weeksBetween(sem.start, today()), weeksLeft: E.weeksBetween(today(), sem.end)
+    });
+    return est ? { n: est.remaining, basis: est.basis } : null;
+  }
+
   function render() {
     var p = state.cutoff, subs = state.subjects, T = E.totals(subs);
     $('#cutoff-v').textContent = p + '%'; $('#reserve-v').textContent = state.reserve;
     $$('[data-rule]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.rule === state.rule)); });
-    var res = subs.map(function (s) { return { s: s, r: E.analyseSubject(s, p, state.reserve) }; });
+    var sem = state.semester || {};
+    $('#sem-start').value = sem.start || ''; $('#sem-end').value = sem.end || '';
+    $('#sem-hint').textContent = sem.start && sem.end
+      ? E.weeksBetween(today(), sem.end).toFixed(1).replace(/\.0$/, '') + ' weeks to go. Each subject now shows its budget for the rest of term. Add credits or announced extra lectures on a subject to sharpen its estimate.'
+      : 'Add both dates and every subject shows how many lectures are probably still to come, and how many of those you can miss.';
+    var res = subs.map(function (s) {
+      var rem = remainingFor(s);
+      var r = E.analyseSubject({ attended: s.attended, held: s.held, remaining: rem ? rem.n : null }, p, state.reserve);
+      r.rem = rem;
+      return { s: s, r: r };
+    });
 
     var overall = T.held ? E.percent(T.attended, T.held) : 0;
     var o = E.analyseSubject(T, p, state.reserve);
@@ -949,9 +1201,11 @@ window.BUNK_CONFIG = { supabaseUrl: 'https://erzxgafxqamtxieicbvu.supabase.co', 
     var p = state.cutoff, isOpen = !!open[s.id];
     var n = r.below ? '<b>' + r.attendToRecover + '</b><small>attend in a row</small>' : '<b>' + r.spendable + '</b><small>can skip</small>';
     var k = whatIf[s.id] || 0, after = E.percentAfterSkipping(s.attended, s.held, k);
-    var term = r.termBudget == null ? '<p class="muted">Add lectures left this semester to see your budget for the rest of term.</p>'
-      : r.termBudget < 0 ? '<p class="muted bad">Even attending all ' + s.remaining + ' remaining, you finish at ' + fmt(r.bestFinish) + '%.</p>'
-      : '<p class="muted">You can miss <b class="ok">' + r.termBudget + '</b> of the ' + s.remaining + ' remaining and still finish at ' + p + '% or more.</p>';
+    var rem = r.rem, BASIS = { typed: 'your number', pace: 'this subject’s pace so far', credits: 'its credits' };
+    var basisNote = rem ? '<span class="est">About ' + rem.n + ' more lectures expected, from ' + BASIS[rem.basis] + (s.extra ? ', including ' + s.extra + ' extra' : '') + '.</span>' : '';
+    var term = r.termBudget == null ? '<p class="muted">Add your semester dates above to see your budget for the rest of term.</p>'
+      : r.termBudget < 0 ? '<p class="muted bad">Even attending all of the remaining lectures, you finish at ' + fmt(r.bestFinish) + '%.</p>' + basisNote
+      : '<p class="muted">Over the rest of term you can miss <b class="ok">' + r.termBudget + '</b> and still finish at ' + p + '% or more.</p>' + basisNote;
     return '<div class="row ' + r.status + (isOpen ? ' open' : '') + '" data-id="' + s.id + '">' +
       '<button class="row-main" type="button" data-act="open" aria-expanded="' + isOpen + '">' +
         ringSvg(r.percent, COLOR[r.status], 46, 6) +
@@ -963,7 +1217,9 @@ window.BUNK_CONFIG = { supabaseUrl: 'https://erzxgafxqamtxieicbvu.supabase.co', 
         '<div class="acts"><button class="pill small" type="button" data-act="att">Attended +1</button><button class="pill small gray" type="button" data-act="miss">Missed +1</button></div>' +
         '<div class="line"><span class="muted">If I skip the next</span><span class="stepper"><button type="button" data-act="wi-" aria-label="Fewer">−</button><span>' + k + '</span><button type="button" data-act="wi+" aria-label="More">+</button></span><span class="muted">I’ll be at <b class="' + (after >= p ? 'ok' : 'bad') + '">' + fmt(after) + '%</b></span></div>' +
         term +
-        '<div class="fields"><label>Attended<input type="number" min="0" data-f="attended" value="' + s.attended + '" inputmode="numeric"></label><label>Held<input type="number" min="0" data-f="held" value="' + s.held + '" inputmode="numeric"></label><label>Left this sem<input type="number" min="0" data-f="remaining" value="' + (s.remaining == null ? '' : s.remaining) + '" placeholder="?" inputmode="numeric"></label></div>' +
+        '<div class="fields"><label>Attended<input type="number" min="0" data-f="attended" value="' + s.attended + '" inputmode="numeric"></label><label>Held<input type="number" min="0" data-f="held" value="' + s.held + '" inputmode="numeric"></label><label>Credits<input type="number" min="0" max="20" data-f="credits" value="' + (s.credits || '') + '" placeholder="optional" inputmode="numeric"></label>' +
+          '<label>Extra lectures announced<input type="number" min="0" data-f="extra" value="' + (s.extra || '') + '" placeholder="0" inputmode="numeric"></label>' +
+          '<label>Lectures left (if you know)<input type="number" min="0" data-f="remaining" value="' + (s.remaining == null ? '' : s.remaining) + '" placeholder="' + (rem && rem.basis !== 'typed' ? 'about ' + rem.n : '?') + '" inputmode="numeric"></label></div>' +
         '<div><button class="textlink" type="button" data-act="del" style="color:var(--red)">Remove Subject</button></div>' +
       '</div></div></div></div>';
   }
@@ -976,6 +1232,9 @@ window.BUNK_CONFIG = { supabaseUrl: 'https://erzxgafxqamtxieicbvu.supabase.co', 
     });
   });
   $$('[data-rule]').forEach(function (b) { b.addEventListener('click', function () { state.rule = b.dataset.rule; save(); render(); }); });
+  ['start', 'end'].forEach(function (k) {
+    $('#sem-' + k).addEventListener('change', function (e) { state.semester = state.semester || {}; state.semester[k] = e.target.value || null; save(); render(); });
+  });
 
   function findSubj(el) { var c = el.closest('.row'); return c && state.subjects.find(function (s) { return s.id === c.dataset.id; }); }
   $('#list').addEventListener('click', function (e) {
@@ -995,6 +1254,8 @@ window.BUNK_CONFIG = { supabaseUrl: 'https://erzxgafxqamtxieicbvu.supabase.co', 
     var f = e.target.dataset.f; if (!f) return;
     var s = findSubj(e.target); if (!s) return;
     if (f === 'remaining') s.remaining = e.target.value === '' ? null : int(e.target.value, 0, 999, 0);
+    else if (f === 'credits') s.credits = e.target.value === '' ? null : int(e.target.value, 0, 20, 0);
+    else if (f === 'extra') s.extra = int(e.target.value, 0, 999, 0);
     else s[f] = int(e.target.value, 0, 9999, 0);
     if (s.attended > s.held) s.held = s.attended;
     save(); render();
@@ -1020,19 +1281,38 @@ window.BUNK_CONFIG = { supabaseUrl: 'https://erzxgafxqamtxieicbvu.supabase.co', 
 
   var dlg = $('#review');
   function review(rows, source) {
-    pending = rows.map(function (r) { return { name: r.name, attended: r.attended, held: r.held, on: true }; });
+    pending = rows.map(function (r) { return { name: r.name, attended: r.attended, held: r.held, type: r.type, fixed: r.fixed, incomplete: !!r.incomplete, on: true }; });
+    var fixed = rows.filter(function (r) { return r.fixed && !r.incomplete; }).length, need = rows.filter(function (r) { return r.incomplete; }).length;
     $('#rv-title').textContent = rows.length ? 'Check what we found' : 'Nothing found';
-    $('#rv-msg').textContent = rows.length ? rows.length + ' subject' + (rows.length > 1 ? 's' : '') + ' from your ' + source + '. Compare with the portal and fix anything misread.'
-      : 'No subject rows in your ' + source + '. Try a clearer screenshot of the Self Attendance Report, or add subjects by hand.';
+    $('#rv-msg').textContent = !rows.length
+      ? 'No subject rows in your ' + source + '. Try a clearer screenshot of the Self Attendance Report, or add subjects by hand.'
+      : rows.length + ' subject' + (rows.length > 1 ? 's' : '') + ' from your ' + source + '.' +
+        (need ? ' ' + need + ' need' + (need > 1 ? '' : 's') + ' numbers from you (in red).' : '') +
+        (fixed ? ' ' + fixed + ' misread number' + (fixed > 1 ? 's were' : ' was') + ' corrected from the percentage column (in orange).' : '') +
+        ' Compare with the portal before saving.';
     $('#rv-save').hidden = !rows.length;
     $('#rv-body').innerHTML = pending.map(function (r, i) {
-      return '<tr data-i="' + i + '"><td><input type="checkbox" data-r="on" checked aria-label="Include"></td><td><input type="text" data-r="name" value="' + esc(r.name) + '"></td><td><input type="number" min="0" data-r="attended" value="' + r.attended + '"></td><td><input type="number" min="0" data-r="held" value="' + r.held + '"></td></tr>';
+      var cls = r.incomplete ? 'need' : r.fixed ? 'flag' : '';
+      var why = r.incomplete ? 'Couldn’t read the numbers. Type them in.' : r.fixed === 'unsure' ? 'Numbers don’t match the percentage. Check them.' : r.fixed ? 'Corrected ' + r.fixed + ' from the percentage.' : '';
+      return '<tr data-i="' + i + '" class="' + cls + '"><td><input type="checkbox" data-r="on" checked aria-label="Include"></td>' +
+        '<td><input type="text" data-r="name" value="' + esc(r.name) + '">' + (why ? '<span class="why">' + why + '</span>' : '') + '</td>' +
+        '<td><input type="number" min="0" data-r="attended" value="' + (r.attended == null ? '' : r.attended) + '"></td>' +
+        '<td><input type="number" min="0" data-r="held" value="' + (r.held == null ? '' : r.held) + '"></td></tr>';
     }).join('');
+    checkReady();
     if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
   }
+  // Save stays off until every ticked row has real numbers (attended no more than held).
+  function checkReady() {
+    var bad = (pending || []).filter(function (r) { return r.on && !(Number.isInteger(r.attended) && Number.isInteger(r.held) && r.held > 0 && r.attended <= r.held); }).length;
+    $('#rv-save').disabled = bad > 0;
+    $('#rv-save').textContent = bad ? 'Fill in ' + bad + ' row' + (bad > 1 ? 's' : '') : 'Save';
+  }
   $('#rv-body').addEventListener('input', function (e) {
-    var r = pending[+e.target.closest('tr').dataset.i], k = e.target.dataset.r;
-    r[k] = k === 'on' ? e.target.checked : k === 'name' ? e.target.value : int(e.target.value, 0, 9999, 0);
+    var tr = e.target.closest('tr'), r = pending[+tr.dataset.i], k = e.target.dataset.r;
+    r[k] = k === 'on' ? e.target.checked : k === 'name' ? e.target.value : (e.target.value === '' ? null : int(e.target.value, 0, 9999, 0));
+    if (k === 'attended' || k === 'held') tr.className = '';
+    checkReady();
   });
   var key = function (n) { return n.toLowerCase().replace(/[^a-z0-9]/g, ''); };
   dlg.addEventListener('close', function () {
@@ -1041,8 +1321,8 @@ window.BUNK_CONFIG = { supabaseUrl: 'https://erzxgafxqamtxieicbvu.supabase.co', 
     var added = 0, updated = 0;
     rows.forEach(function (r) {
       var held = Math.max(r.attended, r.held), hit = state.subjects.find(function (s) { return key(s.name) === key(r.name); });
-      if (hit) { if (hit.remaining != null) hit.remaining = Math.max(0, hit.remaining - Math.max(0, held - hit.held)); hit.attended = r.attended; hit.held = held; updated++; }
-      else { state.subjects.push(mk(r.name.trim(), r.attended, held)); added++; }
+      if (hit) { if (hit.remaining != null) hit.remaining = Math.max(0, hit.remaining - Math.max(0, held - hit.held)); hit.attended = r.attended; hit.held = held; if (r.type) hit.type = r.type; updated++; }
+      else { var n = mk(r.name.trim(), r.attended, held); n.type = r.type || null; state.subjects.push(n); added++; }
     });
     $('#pasted').value = ''; setStatus('');
     firstPaint = true; save(); render();
@@ -1097,6 +1377,84 @@ window.BUNK_CONFIG = { supabaseUrl: 'https://erzxgafxqamtxieicbvu.supabase.co', 
     for (var i = 0; i < items.length; i++) if (/^image\//.test(items[i].type)) { e.preventDefault(); handleFile(items[i].getAsFile()); return; }
   });
 
+  /* ---------- home: motion and the live demo ---------- */
+  if (!REDUCED) document.documentElement.classList.add('anim');
+
+  function countTo(el, to, dur) {
+    if (REDUCED) { el.textContent = to; return; }
+    var t0 = performance.now(); dur = dur || 1100;
+    (function step(now) { var k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3); el.textContent = Math.round(to * e); if (k < 1) requestAnimationFrame(step); })(t0);
+  }
+  function fillRing(c) {
+    var C = parseFloat(c.getAttribute('stroke-dasharray')), pct = parseFloat(c.dataset.pct);
+    c.style.strokeDashoffset = (C * (1 - pct / 100)).toFixed(1);
+  }
+  // one-shot: when something scrolls into view, play its moment
+  var once = 'IntersectionObserver' in window ? new IntersectionObserver(function (es) {
+    es.forEach(function (e) { if (!e.isIntersecting) return; once.unobserve(e.target); e.target.__play(); });
+  }, { threshold: 0.35 }) : null;
+  function onView(el, fn) { el.__play = fn; if (once && !REDUCED) once.observe(el); else fn(); }
+
+  onView($('.phone'), function () {
+    setTimeout(function () { $$('.phone .demo-ring').forEach(fillRing); $$('.phone .count').forEach(function (c) { countTo(c, +c.dataset.to); }); }, 350);
+  });
+  $$('.hero-tile .count').forEach(function (c) { onView(c, function () { countTo(c, +c.dataset.to, 900); }); });
+
+  // scroll-linked: the phone straightens up, and the story section plays its three stages
+  var stage = $('#phone-stage'), story = $('#story'), steps = $$('.story-step');
+  function onScroll() {
+    if ($('[data-view="home"]').hidden) return;
+    var hp = REDUCED ? 1 : Math.min(1, Math.max(0, scrollY / Math.max(300, innerHeight * 0.55)));
+    stage.style.setProperty('--hp', hp.toFixed(3));
+    var r = story.getBoundingClientRect(), span = story.offsetHeight - innerHeight;
+    var p = Math.min(1, Math.max(0, -r.top / Math.max(1, span)));
+    var s = p < 0.3 ? 0 : p < 0.62 ? 1 : 2;
+    story.classList.toggle('s1', s === 1); story.classList.toggle('s2', s === 2);
+    story.style.setProperty('--scan', s === 1 ? ((p - 0.3) / 0.32).toFixed(3) : 0);
+    steps.forEach(function (el) { el.classList.toggle('on', +el.dataset.stage === s); });
+  }
+  addEventListener('scroll', onScroll, { passive: true });
+  addEventListener('resize', onScroll);
+  addEventListener('hashchange', function () { setTimeout(onScroll, 0); });
+
+  // tiles lean gently toward the pointer (mouse and trackpad only)
+  if (matchMedia('(hover: hover) and (pointer: fine)').matches && !REDUCED) {
+    $$('.tilt').forEach(function (t) {
+      t.addEventListener('mousemove', function (e) {
+        var b = t.getBoundingClientRect(), x = (e.clientX - b.left) / b.width - 0.5, y = (e.clientY - b.top) / b.height - 0.5;
+        t.style.transform = 'perspective(900px) rotateY(' + (x * 6).toFixed(2) + 'deg) rotateX(' + (-y * 6).toFixed(2) + 'deg) translateY(-4px)';
+      });
+      t.addEventListener('mouseleave', function () { t.style.transform = ''; });
+    });
+  }
+
+  // try it: the real engine, live
+  var tryState = { a: 27, t: 31, cut: 80 };
+  function paintTry() {
+    var a = tryState.a, t = tryState.t, p = tryState.cut;
+    $('#try-a').textContent = a; $('#try-t').textContent = t;
+    $$('[data-try-cut]').forEach(function (b) { b.setAttribute('aria-pressed', String(+b.dataset.tryCut === p)); });
+    var r = E.analyseSubject({ attended: a, held: t }, p, 0), ring = $('#try-ring'), C = 389.6;
+    ring.style.strokeDashoffset = (C * (1 - Math.min(100, r.percent) / 100)).toFixed(1);
+    ring.setAttribute('stroke', COLOR[r.status]);
+    $('#try-pct').textContent = (Math.round(r.percent * 10) / 10) + '%';
+    var ans = $('#try-answer');
+    if (r.below) ans.innerHTML = '<b class="bad">Attend ' + r.attendToRecover + ' in a row.</b><span>That gets you back to ' + p + '%.</span>';
+    else if (r.spendable === 0) ans.innerHTML = '<b style="color:var(--orange)">Don’t skip the next one.</b><span>You’re right on the line.</span>';
+    else ans.innerHTML = 'You can skip <b class="ok">' + r.spendable + '</b> lecture' + (r.spendable === 1 ? '' : 's') + '.<span>And still be at ' + p + '% or more.</span>';
+  }
+  $$('[data-try]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var k = b.dataset.try, d = +b.dataset.d;
+      tryState[k] = Math.max(0, Math.min(200, tryState[k] + d));
+      if (tryState.a > tryState.t) { if (k === 'a') tryState.t = tryState.a; else tryState.a = tryState.t; }
+      if (tryState.t === 0) tryState.t = 1;
+      paintTry();
+    });
+  });
+  $$('[data-try-cut]').forEach(function (b) { b.addEventListener('click', function () { tryState.cut = +b.dataset.tryCut; paintTry(); }); });
+  onView($('.tryit'), paintTry);
+
   /* ---------- boot ---------- */
   if (!A.configured) { note('Sign-in isn’t switched on yet.', 'error'); }
   if (A.client) A.client.auth.onAuthStateChange(function (event, s) {
@@ -1105,7 +1463,7 @@ window.BUNK_CONFIG = { supabaseUrl: 'https://erzxgafxqamtxieicbvu.supabase.co', 
   A.session().catch(function () { return null; }).then(function (s) {
     session = s; afterSignIn();
     if (s && /access_token=/.test(location.hash)) location.replace('#app'); // arriving from an email link
-    route();
+    route(); onScroll();
   });
 })();
 </script>
