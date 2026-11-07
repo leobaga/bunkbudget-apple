@@ -7,6 +7,13 @@
 <meta name="description" content="See how many lectures you can skip in each subject and still stay above your attendance cutoff.">
 <meta name="theme-color" content="#FBFBFD" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Bunk Budget">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap">
@@ -114,38 +121,6 @@ button { cursor: pointer; }
 .ph-list b { font-size: 17px; font-weight: 600; }
 .tabbar { display: flex; justify-content: space-around; padding: 10px 8px 22px; border-top: 1px solid var(--sep); background: color-mix(in srgb, var(--card) 85%, transparent); font-size: 11px; color: var(--faint); }
 .tabbar .on { color: var(--blue); font-weight: 600; }
-
-/* scroll story: pinned while three stages play out */
-.story { height: 260vh; margin-top: 60px; position: relative; }
-.story-pin { position: sticky; top: 48px; height: calc(100vh - 48px); display: grid; align-items: center; overflow: hidden; }
-.story-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 48px; align-items: center; }
-.story-copy { display: grid; gap: 26px; }
-.story-step { margin: 0; font-size: clamp(21px, 2.6vw, 28px); line-height: 1.25; color: var(--faint); opacity: .35; transition: opacity .5s var(--ease), color .5s var(--ease); }
-.story-step b { color: inherit; font-weight: 600; }
-.story-step.on { opacity: 1; color: var(--text); }
-.story-visual { position: relative; min-height: 340px; }
-.sheet-shot, .answers { position: absolute; inset: 0; border-radius: 22px; padding: 18px; transition: opacity .6s var(--ease), transform .8s var(--ease); }
-.sheet-shot { background: #fff; color: #1d1d1f; box-shadow: var(--shadow), 0 0 0 1px var(--sep); overflow: hidden; font-size: 14px; }
-.ss-head, .ss-row { display: grid; grid-template-columns: minmax(0, 1fr) 64px 56px; gap: 8px; padding: 10px 8px; }
-.ss-head { background: #0b2a5b; color: #fff; border-radius: 8px; font-weight: 600; font-size: 12px; }
-.ss-row { border-bottom: 1px solid #e5e5ea; }
-.ss-row span:not(:first-child), .ss-head span:not(:first-child) { text-align: center; font-variant-numeric: tabular-nums; }
-.scanline { position: absolute; left: 0; right: 0; height: 70px; top: calc(var(--scan, 0) * 100% - 35px); background: linear-gradient(180deg, transparent, rgba(0,113,227,.25) 50%, transparent); opacity: 0; transition: opacity .3s; }
-.story.s1 .scanline { opacity: 1; }
-.answers { background: var(--card); box-shadow: var(--shadow); display: grid; align-content: start; gap: 2px; opacity: 0; transform: translateY(30px) scale(.97); }
-.ans { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 8px; border-bottom: 1px solid var(--sep); opacity: 0; transform: translateX(-16px); transition: opacity .5s var(--ease), transform .6s var(--ease); }
-.ans b { font: 700 28px var(--display); }
-.story.s2 .sheet-shot { opacity: 0; transform: translateY(-24px) scale(.96); }
-.story.s2 .answers { opacity: 1; transform: none; }
-.story.s2 .ans { opacity: 1; transform: none; }
-.story.s2 .ans:nth-child(2) { transition-delay: .06s; } .story.s2 .ans:nth-child(3) { transition-delay: .12s; } .story.s2 .ans:nth-child(4) { transition-delay: .18s; } .story.s2 .ans:nth-child(5) { transition-delay: .24s; }
-@media (max-width: 760px) {
-  .story { height: 240vh; }
-  .story-grid { grid-template-columns: 1fr; gap: 24px; }
-  .story-copy { gap: 10px; } .story-step { font-size: 18px; }
-  .story-visual { min-height: 300px; }
-  .ss-head, .ss-row { grid-template-columns: minmax(0, 1fr) 48px 44px; font-size: 13px; }
-}
 
 /* tiles lean toward the pointer */
 .tilt { transition: transform .5s var(--ease), box-shadow .5s var(--ease), opacity .9s var(--ease); }
@@ -337,6 +312,29 @@ dialog::backdrop { background: rgba(0,0,0,.35); backdrop-filter: blur(4px); }
 .sheet .acts { display: flex; justify-content: flex-end; gap: 10px; }
 .tablewrap { overflow-x: auto; }
 
+/* last synced: green under 3 days, amber 3 to 7, red after 7 */
+.synced { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; border-radius: 14px; padding: 11px 16px; font-size: 15px; background: color-mix(in srgb, var(--c) 10%, var(--card)); border: 1px solid color-mix(in srgb, var(--c) 30%, transparent); }
+.synced.fresh { --c: var(--green); } .synced.aging { --c: var(--orange); } .synced.stale { --c: var(--red); }
+.synced .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--c); flex: none; }
+.synced span:nth-child(2) { flex: 1; min-width: 12em; }
+.synced.stale span:nth-child(2) { color: var(--red); font-weight: 500; }
+.nudge { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.nudge b { font: 600 17px var(--display); }
+.nudge p { margin: 4px 0 0; color: var(--muted); font-size: 15px; max-width: 52ch; }
+.nudge .acts { display: flex; gap: 8px; }
+.who { flex-wrap: wrap; justify-content: flex-end; }
+.homecard { margin-top: 16px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.homecard .app-icon { border-radius: 12px; flex: none; }
+.homecard .hc-text { flex: 1; min-width: 14em; }
+.homecard b { font: 600 17px var(--display); }
+.homecard p { margin: 3px 0 0; color: var(--muted); font-size: 15px; }
+.homecard .steps { margin-top: 12px; }
+.install { text-align: center; justify-items: center; }
+.install .app-icon { border-radius: 15px; box-shadow: 0 8px 20px rgba(0,0,0,.15); }
+.install p { max-width: 34ch; }
+.install .acts { justify-content: center; }
+.steps { text-align: left; margin: 0; padding-left: 22px; display: grid; gap: 10px; font-size: 16px; }
+.steps svg { vertical-align: -3px; color: var(--blue); }
 .toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: color-mix(in srgb, var(--text) 88%, transparent); color: var(--bg); padding: 10px 18px; border-radius: 980px; font-size: 15px; z-index: 60; backdrop-filter: blur(10px); animation: view-in .4s var(--ease); max-width: calc(100% - 32px); }
 
 /* scroll-in: content rises and settles, the Apple way */
@@ -397,37 +395,6 @@ dialog::backdrop { background: rgba(0,0,0,.35); backdrop-filter: blur(4px); }
       </div>
     </div>
 
-    <!-- scroll story: the screenshot turns into answers as you scroll -->
-    <section class="story" id="story" aria-label="How a screenshot becomes skip counts">
-      <div class="story-pin">
-        <div class="wrap story-grid">
-          <div class="story-copy">
-            <p class="story-step" data-stage="0"><b>Drop in your screenshot.</b> The Self Attendance Report, straight from the portal.</p>
-            <p class="story-step" data-stage="1"><b>It reads every row.</b> On your device, in a few seconds. Nothing is uploaded.</p>
-            <p class="story-step" data-stage="2"><b>You get answers.</b> How many lectures each subject can spare, at a glance.</p>
-          </div>
-          <div class="story-visual" aria-hidden="true">
-            <div class="sheet-shot">
-              <div class="ss-head"><span>Subject</span><span>Present</span><span>Total</span></div>
-              <div class="ss-row"><span>Computer Programming</span><span>73</span><span>75</span></div>
-              <div class="ss-row"><span>Financial Management</span><span>56</span><span>60</span></div>
-              <div class="ss-row"><span>AI &amp; Machine Learning</span><span>55</span><span>60</span></div>
-              <div class="ss-row"><span>Direct Tax</span><span>43</span><span>45</span></div>
-              <div class="ss-row"><span>Forensic Accounting</span><span>27</span><span>31</span></div>
-              <i class="scanline"></i>
-            </div>
-            <div class="answers">
-              <div class="ans"><span>Computer Programming</span><b class="ok">16</b></div>
-              <div class="ans"><span>Financial Management</span><b class="ok">10</b></div>
-              <div class="ans"><span>AI &amp; Machine Learning</span><b class="ok">8</b></div>
-              <div class="ans"><span>Direct Tax</span><b class="ok">8</b></div>
-              <div class="ans"><span>Forensic Accounting</span><b style="color:var(--orange)">2</b></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <section class="band wrap" id="how">
       <h2 class="rise">Ten seconds. Three steps.</h2>
       <p class="lead rise">No spreadsheet, no calculator, no guessing near exams.</p>
@@ -461,7 +428,6 @@ dialog::backdrop { background: rgba(0,0,0,.35); backdrop-filter: blur(4px); }
       <h2 class="rise">Questions.</h2>
       <div class="faq">
         <details class="rise"><summary>Is my screenshot uploaded?</summary><p>No. It's read by your own browser on your own device. Your numbers stay in that browser.</p></details>
-        <details class="rise"><summary>How does it know how many lectures are left?</summary><p>Tell it when your semester ends. It uses each subject's pace so far, or its credits if you add them, plus any extra lectures you know about.</p></details>
         <details class="rise"><summary>Why do I need an account?</summary><p>So your numbers belong to you, and so syncing between your phone and laptop can come next. We only use your email to sign you in.</p></details>
         <details class="rise"><summary>Is this official?</summary><p>No. It's an independent tool made by a student. The portal is always the final word.</p></details>
       </div>
@@ -531,7 +497,22 @@ dialog::backdrop { background: rgba(0,0,0,.35); backdrop-filter: blur(4px); }
     <div class="app wrap">
       <div class="app-head">
         <h1>Attendance</h1>
-        <div class="who"><span id="who"></span><button class="pill gray small" id="signout" type="button">Sign Out</button></div>
+        <div class="who"><span id="who"></span><a class="pill small" id="signin-link" href="#signin">Sign In</a><button class="pill gray small" id="signout" type="button" hidden>Sign Out</button></div>
+      </div>
+
+      <div class="synced" id="synced" hidden>
+        <span class="dot" aria-hidden="true"></span>
+        <span id="synced-t"></span>
+        <button class="textlink" id="resync" type="button">Upload new screenshot</button>
+      </div>
+
+      <div class="card nudge" id="welcome" hidden>
+        <div><b>Welcome to the app.</b><p>Sign in to bring the numbers you saved before, or add a screenshot to start fresh.</p></div>
+        <div class="acts"><a class="pill small" href="#signin">Sign In</a><button class="pill gray small" type="button" data-pick>Add Screenshot</button></div>
+      </div>
+      <div class="card nudge" id="nudge" hidden>
+        <div><b>Keep your numbers safe.</b><p>Save them to a free account so they're there on your laptop too, and never lost if you clear your browser.</p></div>
+        <div class="acts"><a class="pill small" href="#signin">Save to Account</a><button class="pill gray small" type="button" id="nudge-later">Not Now</button></div>
       </div>
 
       <div class="grid2">
@@ -568,15 +549,22 @@ dialog::backdrop { background: rgba(0,0,0,.35); backdrop-filter: blur(4px); }
         <div><span class="k">Applies to</span><span class="miniseg"><button type="button" data-rule="subject" aria-pressed="true">Each subject</button><button type="button" data-rule="overall" aria-pressed="false">Overall</button></span></div>
       </div>
 
-      <div class="card sem" aria-label="Semester dates">
-        <label>Semester started <input type="date" id="sem-start"></label>
-        <label>Exams start <input type="date" id="sem-end"></label>
-        <p class="hint-line" id="sem-hint">Add both dates and every subject shows how many lectures are probably still to come, and how many of those you can miss.</p>
-      </div>
-
       <div>
         <div class="listhead"><h2>Subjects</h2><span id="list-note"></span></div>
         <div class="group" id="list"></div>
+        <div class="card homecard" id="homecard" hidden>
+          <img src="icon-192.png" width="52" height="52" alt="" class="app-icon">
+          <div class="hc-text">
+            <b>Next time, skip the portal.</b>
+            <p>Add Bunk Budget to your home screen and check in one tap.</p>
+            <ol class="steps" id="hc-steps" hidden>
+              <li>Tap <b>Share</b> <svg viewBox="0 0 20 24" width="16" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-label="the Share icon"><path d="M10 15V2M5.5 6.5 10 2l4.5 4.5M6 10H3.5v12h13V10H14"/></svg> at the bottom of Safari.</li>
+              <li>Scroll down and tap <b>Add to Home Screen</b>.</li>
+              <li>Tap <b>Add</b>.</li>
+            </ol>
+          </div>
+          <button class="pill small" id="hc-go" type="button">Show me how</button>
+        </div>
       </div>
     </div>
   </section>
@@ -980,7 +968,6 @@ window.BUNK_CONFIG = { supabaseUrl: 'https://erzxgafxqamtxieicbvu.supabase.co', 
     var v = (location.hash.replace('#', '').split(/[?&]/)[0]) || 'home';
     if (v === 'how') v = 'home';
     if (['home', 'about', 'signin', 'app'].indexOf(v) < 0) v = 'home';
-    if (v === 'app' && !session) { location.replace('#signin'); return; }
     if (v === 'signin' && session && !recovering) { location.replace('#app'); return; }
     $$('[data-view]').forEach(function (s) { s.hidden = s.dataset.view !== v; });
     $$('[data-nav]').forEach(function (a) { a.classList.toggle('on', a.dataset.nav === v); });
@@ -1050,7 +1037,11 @@ window.BUNK_CONFIG = { supabaseUrl: 'https://erzxgafxqamtxieicbvu.supabase.co', 
   });
   function enter() {
     A.session().then(function (s) {
-      if (s) { session = s; afterSignIn(); location.hash = '#app'; return; }
+      if (s) {
+        session = s; afterSignIn(); appStarted = false;
+        adoptIntoAccount().then(function () { location.hash = '#app'; route(); });
+        return;
+      }
       busy(false); note('You’re signed in, but this browser didn’t keep it.', 'error', null, 'If you’re in a private window or block site data, allow it for this site and try again.');
     });
   }
@@ -1108,24 +1099,151 @@ window.BUNK_CONFIG = { supabaseUrl: 'https://erzxgafxqamtxieicbvu.supabase.co', 
     });
   });
   $('#signout').addEventListener('click', function () {
-    A.signOut().then(function () { session = null; appStarted = false; location.hash = '#home'; });
+    A.signOut().then(function () { session = null; afterSignIn(); appStarted = false; location.hash = '#home'; });
   });
-  function afterSignIn() { $('#who').textContent = session ? session.user.email : ''; }
+  function afterSignIn() {
+    $('#who').textContent = session ? session.user.email : '';
+    $('#signin-link').hidden = !!session; $('#signout').hidden = !session;
+  }
 
   /* ---------- the tracker ---------- */
+  // Anyone can use it. Numbers live on this device under "guest" until the student signs in;
+  // then they move to their account (this device's copy plus the cloud copy in Supabase).
   var state, KEY, open = {}, whatIf = {}, pending = null, appStarted = false, firstPaint = true;
+  var GUEST = 'bunk-budget:guest';
+  function keyFor(s) { return s ? 'bunk-budget:' + s.user.id : GUEST; }
+  function blank() { return { cutoff: 80, reserve: 0, rule: 'subject', subjects: [], syncedAt: null, edits: 0 }; }
   function mk(name, a, t) { return { id: 's' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name: name, attended: a, held: t, remaining: null }; }
-  function load() {
-    try { var s = JSON.parse(localStorage.getItem(KEY)); if (s && Array.isArray(s.subjects)) return s; } catch (e) {}
-    return { cutoff: 80, reserve: 0, rule: 'subject', subjects: [] };
+  function read(k) {
+    try { var s = JSON.parse(localStorage.getItem(k)); if (s && Array.isArray(s.subjects)) return s; } catch (e) {}
+    return null;
   }
-  function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+  function load() { return read(KEY) || blank(); }
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+    if (session) cloudPushSoon();
+  }
   function startApp() {
     if (appStarted) return;
     appStarted = true; firstPaint = true;
-    KEY = 'bunk-budget:' + session.user.id;
+    KEY = keyFor(session);
+    countVisit();
     state = load(); render();
+    if (session) cloudPull().then(function (remote) {
+      if (remote && isNewer(remote, state)) { state = remote; firstPaint = true; try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} render(); }
+      else if (state.subjects.length && (!remote || isNewer(state, remote))) cloudPushSoon();
+    });
   }
+
+  /* ---------- account copy (Supabase table "attendance", one row per student) ---------- */
+  // Newer = the one made from the more recent portal screenshot; an empty copy never wins.
+  function isNewer(a, b) {
+    if (!a || !a.subjects.length) return false;
+    if (!b || !b.subjects.length) return true;
+    return (a.syncedAt || '') > (b.syncedAt || '');
+  }
+  var cloudWarned = false;
+  function cloudFail(err) {
+    if (cloudWarned) return; cloudWarned = true;
+    toast('Couldn’t reach your account. Your numbers are still saved on this device.');
+    if (window.console) console.warn('Bunk Budget cloud save:', err && err.message);
+  }
+  function cloudPull() {
+    if (!session || !A.client) return Promise.resolve(null);
+    return A.client.from('attendance').select('data').eq('user_id', session.user.id).maybeSingle()
+      .then(function (r) { if (r.error) { cloudFail(r.error); return null; } return r.data && r.data.data && Array.isArray(r.data.data.subjects) ? r.data.data : null; },
+            function (err) { cloudFail(err); return null; });
+  }
+  var pushTimer;
+  function cloudPushSoon() {
+    clearTimeout(pushTimer);
+    pushTimer = setTimeout(function () {
+      if (!session || !A.client) return;
+      A.client.from('attendance').upsert({ user_id: session.user.id, data: state, updated_at: new Date().toISOString() })
+        .then(function (r) { if (r.error) cloudFail(r.error); }, cloudFail);
+    }, 800);
+  }
+  // Right after signing in: keep whichever copy is newest (this device as a guest, this device
+  // for this account, or the account's cloud copy), save it to the account, and empty the guest copy.
+  function adoptIntoAccount() {
+    var guest = read(GUEST), mine = read(keyFor(session));
+    return cloudPull().then(function (remote) {
+      var best = [guest, mine, remote].reduce(function (a, b) { return isNewer(b, a) ? b : a; }, null) || blank();
+      KEY = keyFor(session); state = best;
+      try { localStorage.setItem(KEY, JSON.stringify(state)); localStorage.removeItem(GUEST); } catch (e) {}
+      if (best.subjects.length && best !== remote) { cloudPushSoon(); toast('Your numbers are now saved to your account.'); }
+      appStarted = true; firstPaint = true; render();
+    });
+  }
+
+  /* ---------- gentle asks: one at a time, never a wall ---------- */
+  var STANDALONE = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
+  function countVisit() {
+    try { if (sessionStorage.getItem('bb-counted')) return; sessionStorage.setItem('bb-counted', '1'); } catch (e) { return; }
+    store('bb-visits', String((+store('bb-visits') || 0) + 1));
+  }
+  function paintAsks() {
+    var has = state.subjects.length > 0;
+    // installed app opened for the first time: on iPhone it starts with its own empty storage
+    $('#welcome').hidden = !(STANDALONE && !session && !has);
+    var snoozed = (+store('bb-nudge-until') || 0) > Date.now();
+    $('#nudge').hidden = !(!session && has && (+store('bb-visits') || 0) >= 2 && !snoozed && $('#welcome').hidden);
+  }
+  $('#welcome [data-pick]').addEventListener('click', function () { $('#file').click(); });
+  $('#nudge-later').addEventListener('click', function () { store('bb-nudge-until', String(Date.now() + 7 * 864e5)); paintAsks(); });
+
+  /* ---------- installable app: a card under the results, never a popup ---------- */
+  // Shown on the visit with the first good result and on one later visit, then never again.
+  // Android/Chrome: the button opens the browser's own install prompt. iPhone: it shows the Share steps.
+  var installEvt = null;
+  var IOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); installEvt = e; paintHomeCard(); });
+  addEventListener('appinstalled', function () { installEvt = null; store('bb-installed', '1'); paintHomeCard(); toast('Added to your home screen.'); });
+  function canInstall() { return !STANDALONE && !store('bb-installed') && (installEvt || IOS); }
+  function paintHomeCard() {
+    var card = $('#homecard');
+    if (!card || !state) return;
+    var shownNow = false;
+    try { shownNow = sessionStorage.getItem('bb-hc-now') === '1'; } catch (e) {}
+    var seen = +store('bb-hc-seen') || 0;
+    var show = canInstall() && state.subjects.length > 0 && (shownNow || seen < 2);
+    if (show && !shownNow) {
+      try { sessionStorage.setItem('bb-hc-now', '1'); } catch (e) {}
+      store('bb-hc-seen', String(seen + 1));
+    }
+    card.hidden = !show;
+    $('#hc-go').textContent = installEvt ? 'Add to Home Screen' : 'Show me how';
+  }
+  $('#hc-go').addEventListener('click', function () {
+    if (installEvt) {
+      installEvt.prompt();
+      installEvt.userChoice.then(function () { installEvt = null; paintHomeCard(); });
+      return;
+    }
+    var steps = $('#hc-steps'); steps.hidden = !steps.hidden;
+    this.textContent = steps.hidden ? 'Show me how' : 'Hide steps';
+  });
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+    addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+  }
+
+  /* ---------- how old the numbers are ---------- */
+  // Plain calendar days since the last portal screenshot or pasted table. Taps on +1 don't reset it.
+  function daysSince(iso) {
+    var a = new Date(iso), b = new Date();
+    return Math.round((Date.UTC(b.getFullYear(), b.getMonth(), b.getDate()) - Date.UTC(a.getFullYear(), a.getMonth(), a.getDate())) / 864e5);
+  }
+  function paintSynced() {
+    var box = $('#synced');
+    if (!state.syncedAt || !state.subjects.length) { box.hidden = true; return; }
+    var d = daysSince(state.syncedAt), when = d <= 0 ? 'today' : d === 1 ? 'yesterday' : d + ' days ago';
+    var edits = state.edits ? ', plus ' + state.edits + ' change' + (state.edits > 1 ? 's' : '') + ' you made' : '';
+    box.hidden = false;
+    box.className = 'synced ' + (d < 3 ? 'fresh' : d <= 7 ? 'aging' : 'stale');
+    $('#synced-t').textContent = 'Last synced ' + when + edits + (d > 7 ? '. Your numbers may be off.' : d >= 3 ? '. Worth a fresh screenshot.' : '.');
+  }
+  $('#resync').addEventListener('click', function () { $('#file').click(); });
 
   function ringSvg(pct, color, size, stroke) {
     var r = (size - stroke) / 2, c = 2 * Math.PI * r, off = c * (1 - Math.min(100, Math.max(0, pct)) / 100);
@@ -1140,7 +1258,9 @@ window.BUNK_CONFIG = { supabaseUrl: 'https://erzxgafxqamtxieicbvu.supabase.co', 
   // otherwise the engine's estimate from the semester dates (pace so far, or credits).
   function today() { var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
   function remainingFor(s) {
-    if (s.remaining != null) return { n: s.remaining, basis: 'typed' };
+    return s.remaining != null ? { n: s.remaining, basis: 'typed' } : null;
+  }
+  function remainingFromSemester(s) { // kept for when semester dates come back
     var sem = state.semester || {};
     if (!sem.start || !sem.end) return null;
     var est = E.estimateRemaining({
@@ -1154,11 +1274,6 @@ window.BUNK_CONFIG = { supabaseUrl: 'https://erzxgafxqamtxieicbvu.supabase.co', 
     var p = state.cutoff, subs = state.subjects, T = E.totals(subs);
     $('#cutoff-v').textContent = p + '%'; $('#reserve-v').textContent = state.reserve;
     $$('[data-rule]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.rule === state.rule)); });
-    var sem = state.semester || {};
-    $('#sem-start').value = sem.start || ''; $('#sem-end').value = sem.end || '';
-    $('#sem-hint').textContent = sem.start && sem.end
-      ? E.weeksBetween(today(), sem.end).toFixed(1).replace(/\.0$/, '') + ' weeks to go. Each subject now shows its budget for the rest of term. Add credits or announced extra lectures on a subject to sharpen its estimate.'
-      : 'Add both dates and every subject shows how many lectures are probably still to come, and how many of those you can miss.';
     var res = subs.map(function (s) {
       var rem = remainingFor(s);
       var r = E.analyseSubject({ attended: s.attended, held: s.held, remaining: rem ? rem.n : null }, p, state.reserve);
@@ -1195,6 +1310,7 @@ window.BUNK_CONFIG = { supabaseUrl: 'https://erzxgafxqamtxieicbvu.supabase.co', 
       $$('#list .ring .val').forEach(function (c) { c.style.strokeDashoffset = c.dataset.to; });
     }); });
     firstPaint = false;
+    paintSynced(); paintAsks(); paintHomeCard();
   }
 
   function row(s, r) {
@@ -1202,8 +1318,8 @@ window.BUNK_CONFIG = { supabaseUrl: 'https://erzxgafxqamtxieicbvu.supabase.co', 
     var n = r.below ? '<b>' + r.attendToRecover + '</b><small>attend in a row</small>' : '<b>' + r.spendable + '</b><small>can skip</small>';
     var k = whatIf[s.id] || 0, after = E.percentAfterSkipping(s.attended, s.held, k);
     var rem = r.rem, BASIS = { typed: 'your number', pace: 'this subject’s pace so far', credits: 'its credits' };
-    var basisNote = rem ? '<span class="est">About ' + rem.n + ' more lectures expected, from ' + BASIS[rem.basis] + (s.extra ? ', including ' + s.extra + ' extra' : '') + '.</span>' : '';
-    var term = r.termBudget == null ? '<p class="muted">Add your semester dates above to see your budget for the rest of term.</p>'
+    var basisNote = '';
+    var term = r.termBudget == null ? '<p class="muted">Add how many lectures are left this semester to see your budget for the rest of term.</p>'
       : r.termBudget < 0 ? '<p class="muted bad">Even attending all of the remaining lectures, you finish at ' + fmt(r.bestFinish) + '%.</p>' + basisNote
       : '<p class="muted">Over the rest of term you can miss <b class="ok">' + r.termBudget + '</b> and still finish at ' + p + '% or more.</p>' + basisNote;
     return '<div class="row ' + r.status + (isOpen ? ' open' : '') + '" data-id="' + s.id + '">' +
@@ -1217,9 +1333,7 @@ window.BUNK_CONFIG = { supabaseUrl: 'https://erzxgafxqamtxieicbvu.supabase.co', 
         '<div class="acts"><button class="pill small" type="button" data-act="att">Attended +1</button><button class="pill small gray" type="button" data-act="miss">Missed +1</button></div>' +
         '<div class="line"><span class="muted">If I skip the next</span><span class="stepper"><button type="button" data-act="wi-" aria-label="Fewer">−</button><span>' + k + '</span><button type="button" data-act="wi+" aria-label="More">+</button></span><span class="muted">I’ll be at <b class="' + (after >= p ? 'ok' : 'bad') + '">' + fmt(after) + '%</b></span></div>' +
         term +
-        '<div class="fields"><label>Attended<input type="number" min="0" data-f="attended" value="' + s.attended + '" inputmode="numeric"></label><label>Held<input type="number" min="0" data-f="held" value="' + s.held + '" inputmode="numeric"></label><label>Credits<input type="number" min="0" max="20" data-f="credits" value="' + (s.credits || '') + '" placeholder="optional" inputmode="numeric"></label>' +
-          '<label>Extra lectures announced<input type="number" min="0" data-f="extra" value="' + (s.extra || '') + '" placeholder="0" inputmode="numeric"></label>' +
-          '<label>Lectures left (if you know)<input type="number" min="0" data-f="remaining" value="' + (s.remaining == null ? '' : s.remaining) + '" placeholder="' + (rem && rem.basis !== 'typed' ? 'about ' + rem.n : '?') + '" inputmode="numeric"></label></div>' +
+        '<div class="fields"><label>Attended<input type="number" min="0" data-f="attended" value="' + s.attended + '" inputmode="numeric"></label><label>Held<input type="number" min="0" data-f="held" value="' + s.held + '" inputmode="numeric"></label><label>Left this sem<input type="number" min="0" data-f="remaining" value="' + (s.remaining == null ? '' : s.remaining) + '" placeholder="' + (rem && rem.basis !== 'typed' ? 'about ' + rem.n : '?') + '" inputmode="numeric"></label></div>' +
         '<div><button class="textlink" type="button" data-act="del" style="color:var(--red)">Remove Subject</button></div>' +
       '</div></div></div></div>';
   }
@@ -1232,10 +1346,6 @@ window.BUNK_CONFIG = { supabaseUrl: 'https://erzxgafxqamtxieicbvu.supabase.co', 
     });
   });
   $$('[data-rule]').forEach(function (b) { b.addEventListener('click', function () { state.rule = b.dataset.rule; save(); render(); }); });
-  ['start', 'end'].forEach(function (k) {
-    $('#sem-' + k).addEventListener('change', function (e) { state.semester = state.semester || {}; state.semester[k] = e.target.value || null; save(); render(); });
-  });
-
   function findSubj(el) { var c = el.closest('.row'); return c && state.subjects.find(function (s) { return s.id === c.dataset.id; }); }
   $('#list').addEventListener('click', function (e) {
     if (e.target.closest('[data-pick]')) { $('#file').click(); return; }
@@ -1243,8 +1353,8 @@ window.BUNK_CONFIG = { supabaseUrl: 'https://erzxgafxqamtxieicbvu.supabase.co', 
     var s = findSubj(b); if (!s) return;
     var act = b.dataset.act;
     if (act === 'open') { open[s.id] = !open[s.id]; var rowEl = b.closest('.row'); rowEl.classList.toggle('open', open[s.id]); b.setAttribute('aria-expanded', String(open[s.id])); return; }
-    if (act === 'att') { s.attended++; s.held++; if (s.remaining > 0) s.remaining--; toast(s.name + ': attended'); }
-    else if (act === 'miss') { s.held++; if (s.remaining > 0) s.remaining--; toast(s.name + ': missed'); }
+    if (act === 'att') { s.attended++; s.held++; if (s.remaining > 0) s.remaining--; state.edits = (state.edits || 0) + 1; toast(s.name + ': attended'); }
+    else if (act === 'miss') { s.held++; if (s.remaining > 0) s.remaining--; state.edits = (state.edits || 0) + 1; toast(s.name + ': missed'); }
     else if (act === 'wi+') whatIf[s.id] = (whatIf[s.id] || 0) + 1;
     else if (act === 'wi-') whatIf[s.id] = Math.max(0, (whatIf[s.id] || 0) - 1);
     else if (act === 'del') { state.subjects = state.subjects.filter(function (x) { return x !== s; }); toast('Removed ' + s.name); }
@@ -1258,6 +1368,7 @@ window.BUNK_CONFIG = { supabaseUrl: 'https://erzxgafxqamtxieicbvu.supabase.co', 
     else if (f === 'extra') s.extra = int(e.target.value, 0, 999, 0);
     else s[f] = int(e.target.value, 0, 9999, 0);
     if (s.attended > s.held) s.held = s.attended;
+    if (f === 'attended' || f === 'held') state.edits = (state.edits || 0) + 1;
     save(); render();
   });
 
@@ -1325,6 +1436,7 @@ window.BUNK_CONFIG = { supabaseUrl: 'https://erzxgafxqamtxieicbvu.supabase.co', 
       else { var n = mk(r.name.trim(), r.attended, held); n.type = r.type || null; state.subjects.push(n); added++; }
     });
     $('#pasted').value = ''; setStatus('');
+    if (added + updated) { state.syncedAt = new Date().toISOString(); state.edits = 0; } // fresh portal numbers
     firstPaint = true; save(); render();
     toast([added && added + ' added', updated && updated + ' updated'].filter(Boolean).join(', ') || 'Nothing saved');
   });
@@ -1401,17 +1513,11 @@ window.BUNK_CONFIG = { supabaseUrl: 'https://erzxgafxqamtxieicbvu.supabase.co', 
   $$('.hero-tile .count').forEach(function (c) { onView(c, function () { countTo(c, +c.dataset.to, 900); }); });
 
   // scroll-linked: the phone straightens up, and the story section plays its three stages
-  var stage = $('#phone-stage'), story = $('#story'), steps = $$('.story-step');
+  var stage = $('#phone-stage');
   function onScroll() {
     if ($('[data-view="home"]').hidden) return;
     var hp = REDUCED ? 1 : Math.min(1, Math.max(0, scrollY / Math.max(300, innerHeight * 0.55)));
     stage.style.setProperty('--hp', hp.toFixed(3));
-    var r = story.getBoundingClientRect(), span = story.offsetHeight - innerHeight;
-    var p = Math.min(1, Math.max(0, -r.top / Math.max(1, span)));
-    var s = p < 0.3 ? 0 : p < 0.62 ? 1 : 2;
-    story.classList.toggle('s1', s === 1); story.classList.toggle('s2', s === 2);
-    story.style.setProperty('--scan', s === 1 ? ((p - 0.3) / 0.32).toFixed(3) : 0);
-    steps.forEach(function (el) { el.classList.toggle('on', +el.dataset.stage === s); });
   }
   addEventListener('scroll', onScroll, { passive: true });
   addEventListener('resize', onScroll);
