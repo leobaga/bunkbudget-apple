@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script>window.BB_HASH0 = location.hash;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Bunk Budget</title>
 <meta name="description" content="See how many lectures you can skip in each subject and still stay above your attendance cutoff.">
@@ -1089,13 +1090,24 @@ window.BUNK_CONFIG = { supabaseUrl: 'https://erzxgafxqamtxieicbvu.supabase.co', 
       note('Reset link sent.', 'ok', inbox ? [{ label: inbox.label, href: inbox.href, primary: true }] : null, 'If there’s an account for ' + email + ', the link is in your inbox.');
     });
   });
+  function showReset() {
+    recovering = true;
+    if (location.hash !== '#signin') location.replace('#signin');
+    route();
+    $('#f-main').hidden = true; $('#seg').hidden = true; $('#a-links').hidden = true; $('#f-reset').hidden = false;
+    $('#a-title').textContent = 'Choose a new password';
+    $('#a-sub').textContent = 'At least 8 characters. You’ll stay signed in.';
+    note('');
+    setTimeout(function () { $('#newpw').focus(); }, 50);
+  }
   $('#f-reset').addEventListener('submit', function (e) {
     e.preventDefault();
     var pw = $('#newpw').value;
     if (pw.length < 8) { note('Use a password of at least 8 characters.', 'error'); return; }
     A.setPassword(pw).then(function (r) {
       if (r.error) { note(A.explain(r.error), 'error'); return; }
-      recovering = false; location.hash = '#app';
+      recovering = false; $('#a-links').hidden = false; location.hash = '#app';
+      toast('Password updated. You’re signed in.');
     });
   });
   $('#signout').addEventListener('click', function () {
@@ -1564,12 +1576,20 @@ window.BUNK_CONFIG = { supabaseUrl: 'https://erzxgafxqamtxieicbvu.supabase.co', 
   /* ---------- boot ---------- */
   if (!A.configured) { note('Sign-in isn’t switched on yet.', 'error'); }
   if (A.client) A.client.auth.onAuthStateChange(function (event, s) {
-    if (event === 'PASSWORD_RECOVERY') { recovering = true; location.hash = '#signin'; $('#f-main').hidden = true; $('#seg').hidden = true; $('#a-links').hidden = true; $('#f-reset').hidden = false; $('#a-title').textContent = 'Choose a new password'; }
+    if (event === 'PASSWORD_RECOVERY') showReset();
   });
   A.session().catch(function () { return null; }).then(function (s) {
     session = s; afterSignIn();
-    if (s && /access_token=/.test(location.hash)) location.replace('#app'); // arriving from an email link
-    route(); onScroll();
+    var h0 = window.BB_HASH0 || '';
+    if (/error_code=|error=/.test(h0)) {                   // used or expired email link
+      location.replace('#signin'); route(); setMode('forgot');
+      note('That link has expired.', 'error', null, 'Email links work once and only for an hour. Send yourself a new one below.');
+    } else if (s && /type=recovery/.test(h0)) showReset(); // arriving from a reset email
+    else {
+      if (s && /access_token=/.test(location.hash + h0) && !recovering) location.replace('#app'); // arriving from a sign-up email
+      route();
+    }
+    onScroll();
   });
 })();
 </script>
